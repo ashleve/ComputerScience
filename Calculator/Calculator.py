@@ -48,7 +48,7 @@ class Calculator(tk.Tk):
 
 	def update_current_display(self):
 		if len(str(self.current)) > 14:
-			string = '%.8E' % Decimal(str(self.current))	# scientific notation
+			string = '%.8E' % Decimal(str(self.current))	# displays in scientific notation
 			self.display_current['text'] = string
 		else:
 			self.display_current['text'] = self.current
@@ -108,7 +108,8 @@ class Calculator(tk.Tk):
 					self.execute_operation(number, last_op)
 				except ZeroDivisionError:
 					self.reset_all()
-					self.display_current['text'] = "Nie dziel przez 0 dzbanie"
+					self.display_args['text'] = "Nie dziel przez 0 dzbanie"
+					return
 			else:
 				last_op = arg
 
@@ -163,7 +164,7 @@ class Calculator(tk.Tk):
 		# row1
 		squared = self.set_button('x²', self.column3, '#E6E6E6')
 		root = self.set_button('√', self.column2, '#E6E6E6')
-		modulo = self.set_button('%', self.column1, '#E6E6E6')
+		percent = self.set_button('%', self.column1, '#E6E6E6')
 
 		# row2
 		delete = self.set_button('del', self.column3, '#E6E6E6')
