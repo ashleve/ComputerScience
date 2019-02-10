@@ -1,0 +1,3 @@
+﻿backspace::
+Send, {Enter}
+return
