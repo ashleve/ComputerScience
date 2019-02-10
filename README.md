@@ -1,2 +1,2 @@
-# ComputerScience
-My personal projects. Feel free to use!
+# Computer Science
+My personal projects and resources. Feel free to use!
