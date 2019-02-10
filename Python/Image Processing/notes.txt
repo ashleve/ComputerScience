@@ -1,0 +1,73 @@
+from skimage import io
+img = io.imread("lena.png")			#otwiera jako int dla pliku png
+
+import matplotlib.image as mimg
+img = mimg.imread("lena.png") 			#otwiera jako float32 chyba ¿e to nie plik png, wtedy rób img = img.astype(float32)/255
+
+
+img = np.clip(img + noise, 0, 1)		# funkcja clip ustawia maximum i minimum
+
+
+mimg.imsave("out.jpg", img_noise)		#zapisywanie
+
+img = np.fliplr(img)				#flip
+
+skimage.draw 					#modu³ do rysowania http://scikit-image.org/docs/dev/auto_examples/edges/plot_shapes.html#sphx-glr-auto-examples-edges-plot-shapes-py
+
+
+histogram:
+bins,alpha					#parametry: iloœæ s³upków, przezroczystoœæ
+
+img_as_ubyte					#Convert an image to unsigned byte format, with values in [0, 255].
+
+
+result = data[0, :, :]				#delete dimension	(1,480,640) -> (480,640)
+
+res = result[np.newaxis, ...]			#add dimension		(480,640) -> (1,480,640) 
+
+print(img.dtype)				#print type like uint8, float32 etc.
+print(img.ndim)
+print(img.shape)
+
+
+images = []
+for i in range(100):
+    new_image = # pull image from somewhere
+    images.append(new_image)
+images = np.stack(images, axis=3)
+
+
+plt.imshow(img, interpolation="bicubic") 	#rozmycie zamiast widocznoœci pixeli
+
+
+from skimage.transform import resize		#zmiana rozmiaru
+img = resize(data, (100, 200))
+
+
+img2[img2 < 0] = 0
+img2[img2 > 255] = 255
+
+img_negate = 1 - img
+
+
+from skimage import transform as tf
+img = img_as_ubyte(img)
+img2 = tf.rotate(img, ang, resize=True)		#rotacja
+
+img = img[:, ::-1]  				# mirror
+
+from skimage import color
+if img.ndim==3:					
+    img=color.rgb2gray(img)			#rgb2gray
+
+
+noise = np.random.randn(len(img), len(img[0]), 3) / 10 		#add noise
+img_noise = np.clip(img + noise, 0, 1)
+
+
+mean = np.mean(img)				#œrednia
+
+
+img_red = img[:, :, 0]				#filtruj kolorki		
+img_green = img[:, :, 1]
+img_blue = img[:, :, 2]
