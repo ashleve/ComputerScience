@@ -1,3 +1,0 @@
-﻿backspace::
-Send, {Enter}
-return
