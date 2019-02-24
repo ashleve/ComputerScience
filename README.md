@@ -1,2 +1,2 @@
 # Computer Science
-My personal projects and resources. Feel free to use!
+My random projects and resources. Feel free to use!
