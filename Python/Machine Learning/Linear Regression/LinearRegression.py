@@ -30,7 +30,7 @@ def gradientDescent(X, y, theta, alpha, num_iters):
 		J_hist[i] = compute_cost(X, y, theta)
 
 	# print(J_hist)
-	return theta
+	return theta, J_hist
 
 
 
@@ -60,12 +60,19 @@ J = compute_cost(X, y, theta)
 print("Cost computed with theta [-1, 2]:", J)
 
 
-iterations = 1500
+iterations = 55
 alpha = 0.01
 
 print("\nRunning Gradient Descent ...\n")
-theta = gradientDescent(X, y, theta, alpha, iterations);
+theta, J_hist = gradientDescent(X, y, theta, alpha, iterations);
 print("Theta found by gradient descent:\n", theta)
+
+
+iter_x = np.arange(iterations)
+plt.plot(iter_x, J_hist)
+plt.xlabel('iteration')
+plt.ylabel('Cost function J')
+plt.show()
 
 
 line_y = np.dot(X,theta).reshape(m)
