@@ -97,12 +97,10 @@ def bound_position(boid):
 
 def limit_velocity(boid):
 	v_lim = 10
-	vector = [0, 0]
 	vec_length = sqrt(boid.velocity[0]**2 + boid.velocity[1]**2)
 	if vec_length > v_lim:
 		boid.velocity[0] = int(boid.velocity[0] / vec_length * v_lim)
 		boid.velocity[1] = int(boid.velocity[1] / vec_length * v_lim)
-	return vector
 
 
 
@@ -112,10 +110,10 @@ def move_birds():
 		v2 = rule2(b)
 		v3 = rule3(b)
 		v4 = bound_position(b)
-		v5 = limit_velocity(b)
+		limit_velocity(b)
 
-		b.velocity[0] += v1[0] + v2[0] + v3[0] + v4[0] + v5[0]
-		b.velocity[1] += v1[1] + v2[1] + v3[1] + v4[1] + v5[1]
+		b.velocity[0] += v1[0] + v2[0] + v3[0] + v4[0]
+		b.velocity[1] += v1[1] + v2[1] + v3[1] + v4[1]
 		b.move()
 
 
