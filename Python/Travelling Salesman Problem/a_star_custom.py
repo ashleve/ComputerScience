@@ -12,7 +12,7 @@ class PrioritizedItem:
 
 class AStarCustom:
 
-    DEFAULT_HEURISTIC = 3
+    DEFAULT_HEURISTIC = 0
 
     def __init__(self, graph: Graph):
         self.graph = graph
@@ -22,7 +22,7 @@ class AStarCustom:
     def heuristic(self, path: List[Node]) -> float:
         """
             Returns cost of path.
-                cost:  minimum distance from the last node in path to any node not visited
+                cost for heuristic0: path length + minimum distance from the last node in path to any node not visited
         """
         if self.heuristic_choice == 0:
             return self.heuristic0(path)
@@ -36,9 +36,9 @@ class AStarCustom:
             pass
 
     def heuristic0(self, path: List[Node]) -> float:
-        if len(path) >= self.graph.num_of_nodes:
-            return Graph.calculate_path_length(path) + Graph.distance(path[0], path[-1])
         path_length = Graph.calculate_path_length(path)
+        if len(path) >= self.graph.num_of_nodes:
+            return path_length + Graph.distance(path[0], path[-1])
         costs = [path_length + Graph.distance(node, path[-1]) for node in self.graph[path[-1]] - set(path)]
         return min(costs)
 

@@ -45,42 +45,7 @@ def test_random():
     print("{:-^100}".format(" END OF TEST "), end="\n\n")
 
 
-def try_a_star(num_of_samples, num_of_nodes, heuristic_choice=AStarCustom.DEFAULT_HEURISTIC):
-    a_star_custom = AStarCustom(Graph(0))
-
-    a_star_path_lengths = []
-    a_star_execution_times = []
-
-    for j in range(num_of_samples):
-        graph = Graph(num_of_nodes)
-        starting_node = next(iter(graph.graph))
-
-        start = time.time()
-        a_star_custom.graph = graph
-        a_star_custom.heuristic_choice = heuristic_choice
-        path_a_star = a_star_custom.a_star(starting_node)
-        a_star_path_lengths.append(Graph.calculate_path_length(path_a_star))
-        execution_time = time.time() - start
-        a_star_execution_times.append(execution_time)
-
-    avg_path_length = sum(a_star_path_lengths) / num_of_samples
-    avg_execution_time = sum(a_star_execution_times) / num_of_samples
-    return avg_path_length, avg_execution_time
-
-
-def try_different_a_star_heuristics(num_of_samples, num_of_nodes):
-    a_star_custom = AStarCustom(Graph(0))
-    results = []
-
-    for i in range(a_star_custom.num_of_heuristics):
-        avg_path_length, avg_execution_time = try_a_star(num_of_samples, num_of_nodes, heuristic_choice=i)
-        label = "A* heuristic " + str(i)
-        results.append((avg_path_length, avg_execution_time, label))
-
-    return results
-
-
-def try_dfs_and_bfs_and_greedy(num_of_samples: int, num_of_nodes: int):
+def try_all_approaches(num_of_samples: int, num_of_nodes: int):
     graph = Graph(0)
 
     dfs = DFS(graph)
@@ -94,6 +59,13 @@ def try_dfs_and_bfs_and_greedy(num_of_samples: int, num_of_nodes: int):
     greedy = Greedy(graph)
     greedy_path_lengths = []
     greedy_execution_times = []
+
+    a_star_custom = AStarCustom(graph)
+    a_star_path_lengths = []
+    a_star_execution_times = []
+    for i in range(a_star_custom.num_of_heuristics):
+        a_star_path_lengths.append([])
+        a_star_execution_times.append([])
 
     for j in range(num_of_samples):
         graph = Graph(num_of_nodes)
@@ -120,11 +92,31 @@ def try_dfs_and_bfs_and_greedy(num_of_samples: int, num_of_nodes: int):
         execution_time = time.time() - start
         greedy_execution_times.append(execution_time)
 
+        for i in range(a_star_custom.num_of_heuristics):
+            start = time.time()
+            a_star_custom.graph = graph
+            a_star_custom.heuristic_choice = i
+            path_a_star = a_star_custom.a_star(starting_node)
+            execution_time = time.time() - start
+            a_star_path_lengths[i].append(Graph.calculate_path_length(path_a_star))
+            a_star_execution_times[i].append(execution_time)
+
     dfs_avg_results = sum(dfs_path_lengths) / num_of_samples, sum(dfs_execution_times) / num_of_nodes, "DFS Recurrent"
     bfs_avg_results = sum(bfs_path_lengths) / num_of_samples, sum(bfs_execution_times) / num_of_nodes, "BFS"
     greedy_avg_results = sum(greedy_path_lengths) / num_of_samples, sum(greedy_execution_times) / num_of_nodes, "Greedy"
+    a_star_avg_results = []
+    for i in range(a_star_custom.num_of_heuristics):
+        label = "A* heuristic " + str(i)
+        a_star_avg_results.append(
+            (sum(a_star_path_lengths[i]) / num_of_samples,
+             sum(a_star_execution_times[i]) / num_of_samples,
+             label)
+        )
 
-    return dfs_avg_results, bfs_avg_results, greedy_avg_results
+    data = [dfs_avg_results, bfs_avg_results, greedy_avg_results]
+    data.extend(a_star_avg_results)
+
+    return data
 
 
 def approaches_analysis():
@@ -132,51 +124,87 @@ def approaches_analysis():
         Analyse all approaches in respect to execution time, number of graph nodes and memory usage.
     """
 
-    dfs_results = []
-    bfs_results = []
-    greedy_results = []
-    a_star_results = []
-
-
-
-    # num_of_nodes_to_test = 7
-    # for i in range(2, num_of_nodes_to_test + 1):
-    #
-    #     num_of_nodes = i
-    #
-    #
-    #     dfs_avg_results, bfs_avg_results, greedy_avg_results = try_dfs_and_bfs_and_greedy(num_of_samples, num_of_nodes)
-    #     a_star_avg_results = try_a_star(num_of_samples, num_of_nodes)
-
     num_of_samples = 100
-    num_of_nodes = 6
+    num_of_nodes = 8
 
-    dfs_avg_results, bfs_avg_results, greedy_avg_results = try_dfs_and_bfs_and_greedy(num_of_samples, num_of_nodes)
-    a_star_avg_results = try_different_a_star_heuristics(num_of_samples, num_of_nodes)
+    data = try_all_approaches(num_of_samples, num_of_nodes)
+    plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples)
 
-    data = [dfs_avg_results, bfs_avg_results, greedy_avg_results]
-    for res in a_star_avg_results:
-        data.append(res)
+    results = []
+    num_of_nodes_to_test = 9
+    for i in range(2, num_of_nodes_to_test + 1):
+        data = try_all_approaches(num_of_samples, i)
+        results.append(data)
+    plot_execution_times_and_number_of_nodes(results, num_of_samples)
 
-    df = pd.DataFrame(data, columns=['path_length', 'execution_time', 'Method'])
 
-    print(df)
+def plot_memory_usage_and_number_of_nodes():
+    pass
+
+
+def plot_execution_times_and_number_of_nodes(results, num_of_samples):
+    data = {"Number of nodes": []}
+    for i in range(len(results)):
+        for j in range(len(results[i])):
+            if results[i][j][2] not in data:
+                data[results[i][j][2]] = []
+            data[results[i][j][2]].append(results[i][j][1])
+        data["Number of nodes"].append(i + 2)
+    df = pd.DataFrame(data)
 
     # plotting strip plot with seaborn
     sns.set(style="darkgrid")
     plt.figure(figsize=(9, 10))
-    ax = sns.scatterplot(x="path_length", y="execution_time", hue="Method", data=df, s=250)
+    for column in df.drop('Number of nodes', axis=1):
+        plt.plot(df['Number of nodes'], df[column], linewidth=1, alpha=0.9, label=column)
 
-    # giving labels to x-axis and y-axis
-    x_label = 'Avg path length for {} nodes'.format(num_of_nodes)
-    y_label = 'Avg execution time for {} nodes'.format(num_of_nodes)
-    ax.set(xlabel=x_label, ylabel=y_label)
+    # show legend
+    plt.legend(loc=2, ncol=2)
 
     # giving title to the plot
-    plt.title('Comparing efficiency of different algorithms for TSP')
+    plt.title(
+        'Comparing efficiency of different algorithms for TSP for {} samples'.format(num_of_samples),
+        loc='left', fontsize=16,
+        fontweight=0,
+        color='orange'
+    )
 
-    plt.plot([dfs_avg_results[0], dfs_avg_results[0]], [dfs_avg_results[1] + 0.05 * dfs_avg_results[1], 0 - 0.05 * dfs_avg_results[1]], linewidth=1)
-    plt.annotate("Shortest possible path", [dfs_avg_results[0], dfs_avg_results[1]/2])
+    # giving labels to x-axis and y-axis
+    plt.xlabel("Number of nodes", fontsize=14)
+    plt.ylabel("Execution time", fontsize=14)
+
+    plt.show()
+
+
+def plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples):
+    dfs_avg_results = data[0]
+    df = pd.DataFrame(data, columns=['Path_length', 'Execution_time', 'Method'])
+
+    # plotting strip plot with seaborn
+    sns.set(style="darkgrid")
+    plt.figure(figsize=(9, 10))
+    sns.scatterplot(x="Path_length", y="Execution_time", hue="Method", data=df, s=250)
+
+    # giving labels to x-axis and y-axis
+    plt.xlabel('Avg path length for {} nodes'.format(num_of_nodes), fontsize=14)
+    plt.ylabel('Avg execution time for {} nodes'.format(num_of_nodes), fontsize=14)
+
+    # giving title to the plot
+    plt.title(
+        'Comparing efficiency of different algorithms for TSP for {} samples'.format(num_of_samples),
+        loc='left',
+        fontsize=16,
+        fontweight=0,
+        color='orange'
+    )
+
+    # plot shortest path line
+    plt.plot(
+        [dfs_avg_results[0], dfs_avg_results[0]],
+        [dfs_avg_results[1] + 0.05 * dfs_avg_results[1], 0 - 0.05 * dfs_avg_results[1]],
+        linewidth=1
+    )
+    plt.annotate("Shortest possible avg path", [dfs_avg_results[0], dfs_avg_results[1] / 2])
 
     # show plot
     plt.show()
