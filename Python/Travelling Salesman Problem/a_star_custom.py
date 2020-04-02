@@ -17,7 +17,7 @@ class AStarCustom:
     def __init__(self, graph: Graph):
         self.graph = graph
         self.heuristic_choice = AStarCustom.DEFAULT_HEURISTIC
-        self.num_of_heuristics = 4
+        self.num_of_heuristics = 6
 
     def heuristic(self, path: List[Node]) -> float:
         """
@@ -33,7 +33,9 @@ class AStarCustom:
         elif self.heuristic_choice == 3:
             return self.heuristic3(path)
         elif self.heuristic_choice == 4:
-            pass
+            return self.heuristic4(path)
+        elif self.heuristic_choice == 5:
+            return self.heuristic5(path)
 
     def heuristic0(self, path: List[Node]) -> float:
         path_length = Graph.calculate_path_length(path)
@@ -56,6 +58,14 @@ class AStarCustom:
             return Graph.distance(path[0], path[-1])
         costs = [Graph.distance(node, path[-1]) + Graph.distance(node, path[0]) for node in self.graph[path[-1]] - set(path)]
         return min(costs)
+
+    def heuristic4(self, path: List[Node]) -> float:
+        path_length = Graph.calculate_path_length(path)
+        return path_length / (self.graph.num_of_nodes + 1 - len(path))
+
+    def heuristic5(self, path: List[Node]) -> float:
+        path_length = Graph.calculate_path_length(path)
+        return path_length + Graph.distance(path[0], path[-1])
 
     def a_star(self, start_node: Node) -> List[Node]:
         queue = PriorityQueue()

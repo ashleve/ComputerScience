@@ -46,6 +46,11 @@ def test_random():
 
 
 def try_all_approaches(num_of_samples: int, num_of_nodes: int):
+    """
+        Execute all approaches on the same graphs for given number of nodes and samples (the more samples the more
+        statistically accurate results).
+            Returns: Achieved path lengths and execution times for all approaches.
+    """
     graph = Graph(0)
 
     dfs = DFS(graph)
@@ -131,7 +136,7 @@ def approaches_analysis():
     plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples)
 
     results = []
-    num_of_nodes_to_test = 9
+    num_of_nodes_to_test = 8
     for i in range(2, num_of_nodes_to_test + 1):
         data = try_all_approaches(num_of_samples, i)
         results.append(data)
@@ -186,12 +191,15 @@ def plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples):
     sns.scatterplot(x="Path_length", y="Execution_time", hue="Method", data=df, s=250)
 
     # giving labels to x-axis and y-axis
-    plt.xlabel('Avg path length for {} nodes'.format(num_of_nodes), fontsize=14)
-    plt.ylabel('Avg execution time for {} nodes'.format(num_of_nodes), fontsize=14)
+    plt.xlabel('Avg path length', fontsize=14)
+    plt.ylabel('Avg execution time (seconds)', fontsize=14)
 
     # giving title to the plot
     plt.title(
-        'Comparing efficiency of different algorithms for TSP for {} samples'.format(num_of_samples),
+        'Comparing efficiency of different algorithms for TSP for {} samples and {} nodes'.format(
+            num_of_samples,
+            num_of_nodes
+        ),
         loc='left',
         fontsize=16,
         fontweight=0,
@@ -211,7 +219,7 @@ def plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples):
 
 
 def main():
-    # test_random()
+    test_random()
     approaches_analysis()
 
 
