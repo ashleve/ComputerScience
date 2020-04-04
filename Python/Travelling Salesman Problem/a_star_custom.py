@@ -21,8 +21,16 @@ class AStarCustom:
 
     def heuristic(self, path: List[Node]) -> float:
         """
-            Returns cost of path.
+            Returns cost of the path.
                 cost for heuristic0: path length + minimum distance from the last node in path to any node not visited
+                cost for heuristic1: minimum distance from the last node in path to any node not visited
+                cost for heuristic2: minimum distance from the last node in path to starting node
+                cost for heuristic3:
+                    minimum value of:
+                        distance from the last node in path to any node not visited + distance from node not visited to
+                        starting node
+                cost for heuristic4: path length / number of nodes left to finish full cycle
+                cost for heuristic5: path length + minimum distance from the last node in path to starting node
         """
         if self.heuristic_choice == 0:
             return self.heuristic0(path)
@@ -72,6 +80,7 @@ class AStarCustom:
         queue.put(PrioritizedItem(self.heuristic([start_node]), [start_node]))
 
         while True:
+            # print(queue.qsize())
             current_path = queue.get().item  # deletes first element from queue
 
             if len(current_path) >= self.graph.num_of_nodes:

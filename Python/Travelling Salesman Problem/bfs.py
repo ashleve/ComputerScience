@@ -18,4 +18,3 @@ class BFS:
             all_paths = new_paths
 
         return all_paths
-

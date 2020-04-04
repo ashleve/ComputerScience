@@ -1,9 +1,9 @@
-import matplotlib.pyplot as plt
 from graph import Graph, Node
 from dfs import DFS
 from bfs import BFS
 from greedy import Greedy
 from a_star_custom import AStarCustom
+import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import time
@@ -126,21 +126,21 @@ def try_all_approaches(num_of_samples: int, num_of_nodes: int):
 
 def approaches_analysis():
     """
-        Analyse all approaches in respect to execution time, number of graph nodes and memory usage.
+        Analyse all approaches in respect to execution time, path length and number of graph nodes.
     """
 
     num_of_samples = 100
-    num_of_nodes = 8
 
-    data = try_all_approaches(num_of_samples, num_of_nodes)
-    plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples)
+    data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=8)
+    plot_path_lengths_and_execution_times(data, num_of_samples=num_of_samples, num_of_nodes=8)
 
     results = []
-    num_of_nodes_to_test = 8
-    for i in range(2, num_of_nodes_to_test + 1):
-        data = try_all_approaches(num_of_samples, i)
+    num_of_nodes_to_test = 7
+    start_counting_from_node = 3
+    for i in range(start_counting_from_node, num_of_nodes_to_test + 1):
+        data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=i)
         results.append(data)
-    plot_execution_times_and_number_of_nodes(results, num_of_samples)
+    plot_execution_times_and_number_of_nodes(results, num_of_samples=num_of_samples)
 
 
 def plot_memory_usage_and_number_of_nodes():
@@ -181,7 +181,7 @@ def plot_execution_times_and_number_of_nodes(results, num_of_samples):
     plt.show()
 
 
-def plot_path_lengths_and_execution_times(data, num_of_nodes, num_of_samples):
+def plot_path_lengths_and_execution_times(data, num_of_samples, num_of_nodes):
     dfs_avg_results = data[0]
     df = pd.DataFrame(data, columns=['Path_length', 'Execution_time', 'Method'])
 
