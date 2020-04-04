@@ -131,30 +131,28 @@ def approaches_analysis():
 
     num_of_samples = 100
 
-    data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=8)
-    plot_path_lengths_and_execution_times(data, num_of_samples=num_of_samples, num_of_nodes=8)
+    num_of_nodes = 9
+    data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=num_of_nodes)
+    plot_path_lengths_and_execution_times(data, num_of_samples=num_of_samples, num_of_nodes=num_of_nodes)
 
     results = []
-    num_of_nodes_to_test = 7
+    num_of_nodes_to_test = 9
     start_counting_from_node = 3
     for i in range(start_counting_from_node, num_of_nodes_to_test + 1):
+        print(i)
         data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=i)
         results.append(data)
-    plot_execution_times_and_number_of_nodes(results, num_of_samples=num_of_samples)
+    plot_number_of_nodes_and_execution_times(results, num_of_samples=num_of_samples)
 
 
-def plot_memory_usage_and_number_of_nodes():
-    pass
-
-
-def plot_execution_times_and_number_of_nodes(results, num_of_samples):
+def plot_number_of_nodes_and_execution_times(results, num_of_samples):
     data = {"Number of nodes": []}
     for i in range(len(results)):
         for j in range(len(results[i])):
             if results[i][j][2] not in data:
                 data[results[i][j][2]] = []
             data[results[i][j][2]].append(results[i][j][1])
-        data["Number of nodes"].append(i + 2)
+        data["Number of nodes"].append(i + 3)
     df = pd.DataFrame(data)
 
     # plotting strip plot with seaborn

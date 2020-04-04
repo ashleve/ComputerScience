@@ -77,6 +77,7 @@ class AStarCustom:
 
     def a_star(self, start_node: Node) -> List[Node]:
         queue = PriorityQueue()
+        # queue = PriorityQueue(maxsize=100000)
         queue.put(PrioritizedItem(self.heuristic([start_node]), [start_node]))
 
         while True:
