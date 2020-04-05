@@ -11,7 +11,7 @@ import time
 
 def test_random():
     """
-        Test all approaches for random path.
+        Test all approaches on random graph.
     """
     num_of_nodes = 7
     graph = Graph(num_of_nodes)
@@ -131,12 +131,12 @@ def approaches_analysis():
 
     num_of_samples = 100
 
-    num_of_nodes = 9
+    num_of_nodes = 8
     data = try_all_approaches(num_of_samples=num_of_samples, num_of_nodes=num_of_nodes)
     plot_path_lengths_and_execution_times(data, num_of_samples=num_of_samples, num_of_nodes=num_of_nodes)
 
     results = []
-    num_of_nodes_to_test = 9
+    num_of_nodes_to_test = 8
     start_counting_from_node = 3
     for i in range(start_counting_from_node, num_of_nodes_to_test + 1):
         print(i)
@@ -174,7 +174,7 @@ def plot_number_of_nodes_and_execution_times(results, num_of_samples):
 
     # giving labels to x-axis and y-axis
     plt.xlabel("Number of nodes", fontsize=14)
-    plt.ylabel("Execution time", fontsize=14)
+    plt.ylabel("Execution time (seconds)", fontsize=14)
 
     plt.show()
 
@@ -185,7 +185,7 @@ def plot_path_lengths_and_execution_times(data, num_of_samples, num_of_nodes):
 
     # plotting strip plot with seaborn
     sns.set(style="darkgrid")
-    plt.figure(figsize=(9, 10))
+    plt.figure(figsize=(10, 10))
     sns.scatterplot(x="Path_length", y="Execution_time", hue="Method", data=df, s=250)
 
     # giving labels to x-axis and y-axis
