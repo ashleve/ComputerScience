@@ -20,6 +20,7 @@ class ClientHandle:
         while not self._stop_event.is_set():        # exit on signal from caller
             success = self.handle_data()            # handle any data; continue loop after 1 second
             if not success:
+                self.conn.close()
                 break
 
     def handle_data(self):
@@ -73,6 +74,7 @@ class Server:
     def close_all(self):
         for client in self.clients:
             client.stop()
+            client.conn.close()
 
         if self._socket is not None:
             self._socket.close()
