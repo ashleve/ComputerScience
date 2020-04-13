@@ -44,6 +44,7 @@ def main():
 
         print("Connection established with address:", addr, end="\n\n")
         server.create_client_thread(conn, addr)
+        print("Number of currently connected clients: ", len(server.clients))
 
     server.close_all()
     print("Server closed.")
