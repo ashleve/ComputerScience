@@ -1,0 +1,43 @@
+{
+    "storage1" : {
+        "item1" : 1,
+        "item2" : 2,
+        "item3" : 1,
+        "item4" : 3,
+        "item5" : 1
+    },
+
+    "storage2" : {
+        "item1" : 1,
+        "item2" : 2,
+        "item3" : 1,
+        "item4" : 1,
+        "item5" : 1
+    },
+
+    "storage3" : {
+        "item1" : 5,
+        "item2" : 1,
+        "item3" : 1,
+        "item4" : 1,
+        "item5" : 3
+    },
+
+    "storage4" : {
+        "item1" : 4,
+        "item2" : 1,
+        "item3" : 4,
+        "item4" : 4,
+        "item5" : 1
+    },
+
+    "storage5" : {
+        "item1" : 1,
+        "item2" : 1,
+        "item3" : 1,
+        "item4" : 1,
+        "item5" : 1
+    }
+
+
+}
