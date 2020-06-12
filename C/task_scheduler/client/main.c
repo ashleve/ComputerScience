@@ -42,15 +42,15 @@ int main() {
 
         if(!strcmp(answer, "0"))
         {
-            char path[BUFF_SIZE];   // hardcoded for ease of use
-            strcpy(path, "/home/ukasz/Desktop/main.exe");
-//            char path[300];
+//            char path[BUFF_SIZE];   // hardcoded for ease of use
+//            strcpy(path, "/home/ukasz/Desktop/main.exe");
+            char path[BUFF_SIZE];
             char args[BUFF_SIZE], time[BUFF_SIZE], repeat[BUFF_SIZE], tmp[BUFF_SIZE];
             char request[BUFF_SIZE];
             strcpy(request, "schedule_task");
-//            fprintf(stderr,"path:");
-//            scanf("%[^\n]", path);
-//            scanf("%c", &c);
+            fprintf(stderr,"path:");
+            scanf("%[^\n]", path);
+            scanf("%c", &c);
             fprintf(stderr,"args:");
             scanf("%[^\n]", args);
             scanf("%c", &c);
