@@ -20,6 +20,8 @@ void report(const char *msg, int terminate);
 
 void read_message(char *buffer, int client_fd);
 
+void write_message(char *buffer, int client_fd);
+
 void create_task_timer_process(mqd_t m_queue, char *buffer0, char *buffer1, char *buffer2);
 
 void update_task_list(mqd_t m_queue);
@@ -43,29 +45,38 @@ int main() {
         /* read from client */
         char buffer0[BUFF_SIZE + 1], buffer1[BUFF_SIZE + 1], buffer2[BUFF_SIZE + 1], buffer3[BUFF_SIZE + 1];
         read_message(buffer0, client_fd);
-        read_message(buffer1, client_fd);
-        read_message(buffer2, client_fd);
-        read_message(buffer3, client_fd);
-        fprintf(stderr, "\nNew request: %s %s %s %s\n", buffer0, buffer1, buffer2, buffer3);
+        write_message(buffer0, client_fd);
 
         update_task_list(m_queue);
 
         if (!strcmp(buffer0, "schedule_task")) {
+            read_message(buffer1, client_fd);
+            write_message(buffer1, client_fd);
+            read_message(buffer2, client_fd);
+            write_message(buffer2, client_fd);
+            read_message(buffer3, client_fd);
+            write_message(buffer3, client_fd);
             create_task_timer_process(m_queue, buffer1, buffer2, buffer3);
         } else if (!strcmp(buffer0, "cancel_task")) {
             int task_id = atoi(buffer1);
             delete_task(task_id);
         } else if (!strcmp(buffer0, "get_info")) {
             printList();
+            write_message(buffer1, client_fd);
         } else if (!strcmp(buffer0, "exit")) {
             close(client_fd);
             close(fd);
             break;
         }
 
+        fprintf(stderr, "\nNew request: %s %s %s %s\n", buffer0, buffer1, buffer2, buffer3);
+
         close(client_fd); /* break connection */
 
         printList();
+        char buffer[1000];
+        get_task_info(buffer);
+        fprintf(stderr, "%s", buffer);
     }
 
     return 0;
@@ -110,10 +121,11 @@ void report(const char *msg, int terminate) {
 
 void read_message(char *buffer, int client_fd) {
     memset(buffer, '\0', BUFF_SIZE + 1);
-    int count = read(client_fd, buffer, BUFF_SIZE + 1);
-    if (count > 0) {
-        write(client_fd, buffer, strlen(buffer) * sizeof(char)); /* echo as confirmation */
-    }
+    int err = read(client_fd, buffer, BUFF_SIZE + 1);
+}
+
+void write_message(char *buffer, int client_fd){
+    write(client_fd, buffer, strlen(buffer) * sizeof(char)); /* echo as confirmation */
 }
 
 void create_task_timer_process(mqd_t m_queue, char *buffer0, char *buffer1, char *buffer2) {

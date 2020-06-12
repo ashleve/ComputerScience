@@ -16,6 +16,7 @@ struct node *head;
 
 int length();
 void printList();
+void get_task_info(char *buffer);
 void insertFirst(int key, int data);
 struct node* find(int key);
 struct node* delete(int key);
