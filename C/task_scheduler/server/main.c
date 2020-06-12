@@ -43,7 +43,7 @@ int main() {
         }
 
         /* read from client */
-        char buffer0[BUFF_SIZE + 1], buffer1[BUFF_SIZE + 1], buffer2[BUFF_SIZE + 1], buffer3[BUFF_SIZE + 1];
+        char buffer0[BUFF_SIZE], buffer1[BUFF_SIZE], buffer2[BUFF_SIZE], buffer3[BUFF_SIZE];
         read_message(buffer0, client_fd);
         write_message(buffer0, client_fd);
 
@@ -56,27 +56,34 @@ int main() {
             write_message(buffer2, client_fd);
             read_message(buffer3, client_fd);
             write_message(buffer3, client_fd);
+
+            if (display_logs)
+                fprintf(stderr, "\nNew request: %s %s %s %s\n", buffer0, buffer1, buffer2, buffer3);
+
             create_task_timer_process(m_queue, buffer1, buffer2, buffer3);
         } else if (!strcmp(buffer0, "cancel_task")) {
+            read_message(buffer1, client_fd);
             int task_id = atoi(buffer1);
+            if (display_logs)
+                fprintf(stderr, "New request: %s %i\n", buffer0, task_id);
             delete_task(task_id);
         } else if (!strcmp(buffer0, "get_info")) {
-            printList();
-            write_message(buffer1, client_fd);
+            if (display_logs)
+                fprintf(stderr, "New request: %s\n", buffer0);
+            char resp[BUFF_SIZE];
+            get_task_info(resp);
+            if (display_logs)
+                fprintf(stderr, "%s", resp);
+            write_message(resp, client_fd);
         } else if (!strcmp(buffer0, "exit")) {
+            if (display_logs)
+                fprintf(stderr, "New request: %s\n", buffer0);
             close(client_fd);
             close(fd);
             break;
         }
 
-        fprintf(stderr, "\nNew request: %s %s %s %s\n", buffer0, buffer1, buffer2, buffer3);
-
         close(client_fd); /* break connection */
-
-        printList();
-        char buffer[1000];
-        get_task_info(buffer);
-        fprintf(stderr, "%s", buffer);
     }
 
     return 0;
@@ -102,7 +109,9 @@ int create_server() {
     /* listen to the socket */
     if (listen(fd, MAX_CONNECTS) < 0) /* listen for clients, up to MAX_CONNECTS */
         report("listen", 1); /* terminate */
-    fprintf(stderr, "Listening on port %i for clients...\n", PORT_NUMBER);
+
+    if (display_logs)
+        fprintf(stderr, "Listening on port %i for clients...\n", PORT_NUMBER);
 
     return fd;
 }
@@ -111,21 +120,30 @@ int accept_client(int fd) {
     struct sockaddr_in caddr; /* client address */
     int len = sizeof(caddr); /* address length could change */
     int client_fd = accept(fd, (struct sockaddr *) &caddr, &len); /* accept blocks */
+    if (display_logs)
+        fprintf(stderr, "\nClient connected...\n");
     return client_fd;
 }
 
 void report(const char *msg, int terminate) {
-    perror(msg);
+    if (display_logs)
+        perror(msg);
     if (terminate) exit(-1); /* failure */
 }
 
 void read_message(char *buffer, int client_fd) {
-    memset(buffer, '\0', BUFF_SIZE + 1);
-    int err = read(client_fd, buffer, BUFF_SIZE + 1);
+    memset(buffer, '\0', BUFF_SIZE);
+    if (read(client_fd, buffer, BUFF_SIZE) <= 0) {
+        if (display_logs)
+            fprintf(stderr, "ERROR READ\n");
+    }
 }
 
-void write_message(char *buffer, int client_fd){
-    write(client_fd, buffer, strlen(buffer) * sizeof(char)); /* echo as confirmation */
+void write_message(char *buffer, int client_fd) {
+    if (write(client_fd, buffer, BUFF_SIZE) <= 0) {
+        if (display_logs)
+            fprintf(stderr, "ERROR WRITE\n");
+    } /* echo as confirmation */
 }
 
 void create_task_timer_process(mqd_t m_queue, char *buffer0, char *buffer1, char *buffer2) {
@@ -136,7 +154,8 @@ void create_task_timer_process(mqd_t m_queue, char *buffer0, char *buffer1, char
 
     pid_t pid = fork();
     if (pid == -1) {
-        printf("ERROR");
+        if (display_logs)
+            printf("ERROR FORK");
         exit(EXIT_FAILURE);
     } else if (pid == 0) {
         schedule_task(m_queue, path_with_args, is_periodic, time * NANOSECONDS_IN_SEC);
@@ -169,9 +188,11 @@ void update_task_list(mqd_t m_queue) {
             // remove task from list if exists
             struct node *success = delete(msg.id);
             if (success) {
-                fprintf(stderr, "Task with id %i removed from list\n", msg.id);
+                if (display_logs)
+                    fprintf(stderr, "Task with id %i removed from list\n", msg.id);
             } else {
-                fprintf(stderr, "Removing task %i from list failed\n", msg.id);
+                if (display_logs)
+                    fprintf(stderr, "Removing task %i from list failed\n", msg.id);
             }
         }
 

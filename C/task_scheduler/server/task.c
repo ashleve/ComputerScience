@@ -39,13 +39,12 @@ static void handler(int sig, siginfo_t *si, void *uc)
         struct msg_buffer msg;
         pid_t pid = getpid();
         msg.id = (int)pid;
-//        fprintf(stderr,"(CLIENT): sending message pid: %d\n", msg.id);
         int err = mq_send(m_queue, (char *) &msg, sizeof(msg), 1);
 
-        if(err == -1)
-        {
-            fprintf(stderr, "ERROR %i", err);
-        }
+//        if(err == -1)
+//        {
+//            fprintf(stderr, "ERROR %i", err);
+//        }
     }
 }
 

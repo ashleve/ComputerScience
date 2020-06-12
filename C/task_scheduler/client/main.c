@@ -11,28 +11,6 @@
 #include "sock.h"
 
 
-const char *schedule_task[] = {
-        "schedule_task",
-        "/home/ukasz/Desktop/main.exe -a -b -c",
-        "5",    // time interval
-        "0"  // 1 = run repeatedly, 0 = run only once
-};
-
-const char *cancel_task[] = {
-        "cancel_task",
-        "1",
-        "",
-        ""
-};
-
-const char *get_info[] = {
-        "get_info",
-        "",
-        "",
-        ""
-};
-
-
 int create_socket();
 void connect_to_server(int sockfd);
 void report(const char *msg, int terminate);
@@ -41,8 +19,6 @@ void read_message(int sockfd, char* buffer);
 
 
 int main() {
-
-
 
     puts("Connected to server...");
 
@@ -57,7 +33,7 @@ int main() {
                       "2 - cancel task\n"
                       "3 - exit\n";
 
-        printf("%s", text);
+        fprintf(stderr,"%s", text);
 
         char answer[2];
         scanf("%[^\n]", answer);
@@ -66,24 +42,26 @@ int main() {
 
         if(!strcmp(answer, "0"))
         {
-//            char path[300] = "/home/ukasz/Desktop/main.exe";   // hardcoded for ease of use
-            char path[300];
-            char args[100], time[10], repeat[3], tmp[0];
-            char request[] = "schedule_task";
-            printf("path:");
-            scanf("%[^\n]", path);
-            scanf("%c", &c);
-            printf("args:");
+            char path[BUFF_SIZE];   // hardcoded for ease of use
+            strcpy(path, "/home/ukasz/Desktop/main.exe");
+//            char path[300];
+            char args[BUFF_SIZE], time[BUFF_SIZE], repeat[BUFF_SIZE], tmp[BUFF_SIZE];
+            char request[BUFF_SIZE];
+            strcpy(request, "schedule_task");
+//            fprintf(stderr,"path:");
+//            scanf("%[^\n]", path);
+//            scanf("%c", &c);
+            fprintf(stderr,"args:");
             scanf("%[^\n]", args);
             scanf("%c", &c);
-            printf("time:");
+            fprintf(stderr,"time:");
             scanf("%[^\n]", time);
             scanf("%c", &c);
-            printf("repeat? (0 - no, 1 - yes):");
+            fprintf(stderr,"repeat? (0 - no, 1 - yes):");
             scanf("%[^\n]", repeat);
             scanf("%c", &c);
 
-//            strcat(path, " ");
+            strcat(path, " ");
             strcat(path, args);
 
             write_message(sockfd, request);
@@ -95,27 +73,31 @@ int main() {
             write_message(sockfd, repeat);
             read_message(sockfd, tmp);
 
-            printf("Task scheduled\n");
-            break;
+            fprintf(stderr,"Task scheduled\n");
         }
         else if(!strcmp(answer, "1"))
         {
-            printf("Requesting task info...");
-            char request[] = "get_info";
+            fprintf(stderr,"Requesting task info...\n");
+            char request[BUFF_SIZE];
+            strcpy(request, "get_info");
             write_message(sockfd, request);
-            char response[BuffSize];
+            char response[BUFF_SIZE];
             read_message(sockfd, response);
-            printf("%s", response);
+            read_message(sockfd, response);
+            fprintf(stderr,"TASK INFO: %s\n", response);
         }
         else if(!strcmp(answer, "2"))
         {
             char id[6];
-            printf("Type task id:");
+            fprintf(stderr,"Type task id:");
             scanf("%[^\n]", id);
             scanf("%c", &c);
-            printf("Cancelling task with id %s:", id);
-            char request[] = "cancel_task";
+            fprintf(stderr,"Cancelling task with id %s:\n\n", id);
+            char request[BUFF_SIZE];
+            strcpy(request, "cancel_task");
             write_message(sockfd, request);
+            char tmp[BUFF_SIZE];
+            read_message(sockfd, tmp);
             write_message(sockfd, id);
         }
         else if(!strcmp(answer, "3"))
@@ -145,7 +127,7 @@ int create_socket()
 void connect_to_server(int sockfd)
 {
     /* get the address of the host */
-    struct hostent *hptr = gethostbyname(Host); /* localhost: 127.0.0.1 */
+    struct hostent *hptr = gethostbyname(HOST); /* localhost: 127.0.0.1 */
     if (!hptr) report("gethostbyname", 1); /* is hptr NULL? */
     if (hptr->h_addrtype != AF_INET) /* versus AF_LOCAL */
         report("bad address family", 1);
@@ -156,7 +138,7 @@ void connect_to_server(int sockfd)
     saddr.sin_family = AF_INET;
     saddr.sin_addr.s_addr =
             ((struct in_addr *) hptr->h_addr_list[0])->s_addr;
-    saddr.sin_port = htons(PortNumber); /* port number in big-endian */
+    saddr.sin_port = htons(PORT_NUMBER); /* port number in big-endian */
     if (connect(sockfd, (struct sockaddr *) &saddr, sizeof(saddr)) < 0)
         report("connect", 1);
 }
@@ -168,16 +150,17 @@ void report(const char *msg, int terminate) {
 
 void write_message(int sockfd, char* buffer)
 {
-    if (write(sockfd, buffer, strlen(buffer)) <= 0) {
-        printf("ERROR");
+    if (write(sockfd, buffer, BUFF_SIZE) <= 0) {
+        fprintf(stderr,"ERROR WRITE\n");
     }
 }
 
 void read_message(int sockfd, char* buffer)
 {
-    memset(buffer, '\0', sizeof(BuffSize));
-    if (read(sockfd, buffer, sizeof(BuffSize)) <= 0)
+    memset(buffer, '\0', BUFF_SIZE);
+    if (read(sockfd, buffer, BUFF_SIZE ) <= 0)
     {
-        printf("ERROR");
+        fprintf(stderr,"ERROR READ\n");
     }
+//    puts(buffer);
 }
