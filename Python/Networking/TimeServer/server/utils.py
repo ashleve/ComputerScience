@@ -16,7 +16,10 @@ def get_addresses_of_all_interfaces():
 def set_tcp_sockets(ip_addresses):
     sockets = []
     for addr in ip_addresses:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(
+            socket.AF_INET,  # IPv4
+            socket.SOCK_STREAM  # TCP
+        )
         sock.bind((addr, 0))  # bind to random port
         sockets.append(sock)
     return sockets
@@ -53,7 +56,6 @@ def client_thread(conn):
 
 
 def multicast_response_loop(multicast_sock, sockets):
-    print("Multicast response loop initialized.")
     while True:
         message, (host, port) = multicast_sock.recvfrom(1024)
         if message == b"DISCOVERY":
@@ -66,13 +68,19 @@ def init_multicast_socket():
     MCAST_GRP = '224.1.1.1'
     MCAST_PORT = 7
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock = socket.socket(
+        socket.AF_INET,  # IPv4
+        socket.SOCK_DGRAM,  # UDP
+        socket.IPPROTO_UDP
+    )
+
+    # allow reuse of socket (to allow another instance of python running this script binding to the same ip/port)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     # on this port, receives ALL multicast groups
     sock.bind(('', MCAST_PORT))
 
     mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
-
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
     return sock

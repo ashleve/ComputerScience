@@ -4,6 +4,7 @@ import threading
 
 
 def main():
+    print("TCP sockets initialized.")
     ipv6_addresses, ipv4_addresses = get_addresses_of_all_interfaces()
     sockets = set_tcp_sockets(ipv4_addresses)
 
@@ -16,6 +17,8 @@ def main():
     multicast_sock = init_multicast_socket()
     multicast_thread = threading.Thread(target=multicast_response_loop, args=(multicast_sock, sockets), daemon=True)
     multicast_thread.start()
+    print("Multicast response loop initialized.")
+    print("Waiting for clients...")
 
     multicast_thread.join()
 

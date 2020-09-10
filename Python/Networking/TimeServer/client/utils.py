@@ -39,7 +39,11 @@ def init_multicast_socket():
     # be re-sent/broadcast (see https://www.tldp.org/HOWTO/Multicast-HOWTO-6.html)
     MULTICAST_TTL = 2
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock = socket.socket(
+        socket.AF_INET,  # IPv4
+        socket.SOCK_DGRAM,  # UDP
+        socket.IPPROTO_UDP
+    )
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
 
     return sock
@@ -61,7 +65,7 @@ def get_host_list(multicast_sock):
         try:
             message, (host, port) = multicast_sock.recvfrom(1024)
             if "OFFER ADDRESS PORT" in message.decode():
-                address = make_tuple(message.decode().replace("OFFER ADDRESS PORT ", ""))  # parse message
+                address = make_tuple(message.decode().replace("OFFER ADDRESS PORT ", ""))  # parse address
                 host_list.append(address)
         except socket.timeout:
             pass
@@ -70,7 +74,10 @@ def get_host_list(multicast_sock):
 
 
 def connect_to_server(host, port):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket.socket(
+        socket.AF_INET,  # IPv4
+        socket.SOCK_STREAM  # TCP
+    )
     sock.connect((host, port))
     print("Connected on client socket:", sock.getsockname(), "to server socket:", str((host, port)))
 
